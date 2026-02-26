@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  useMemo
+} from 'react';
 import { motion } from 'framer-motion';
 import { debounce } from 'lodash';
 import ControlPanel from './ControlPanel';
@@ -26,7 +32,6 @@ export default function ImageEditor({ originalImage, onNewImage }) {
   const [loading, setLoading] = useState(false);
   const processingRef = useRef(false);
 
-
   const processImage = useCallback(
     async (currentSettings) => {
       if (processingRef.current) return;
@@ -36,30 +41,25 @@ export default function ImageEditor({ originalImage, onNewImage }) {
       try {
         let img = originalImage;
 
-
         if (currentSettings.brightness !== 0) {
           const res = await adjustBrightness(img, currentSettings.brightness);
           img = res.data.image;
         }
-
 
         if (currentSettings.contrast !== 1.0) {
           const res = await adjustContrast(img, currentSettings.contrast);
           img = res.data.image;
         }
 
-
         if (currentSettings.red !== 0) {
           const res = await adjustChannel(img, 'red', currentSettings.red);
           img = res.data.image;
         }
 
-
         if (currentSettings.green !== 0) {
           const res = await adjustChannel(img, 'green', currentSettings.green);
           img = res.data.image;
         }
-
 
         if (currentSettings.blue !== 0) {
           const res = await adjustChannel(img, 'blue', currentSettings.blue);
@@ -77,12 +77,10 @@ export default function ImageEditor({ originalImage, onNewImage }) {
     [originalImage]
   );
 
-
-  const debouncedProcess = useCallback(
-    debounce((s) => processImage(s), 300),
-    [processImage]
-  );
-
+  // ✅ FIXED: useMemo instead of useCallback for debounce
+  const debouncedProcess = useMemo(() => {
+    return debounce((s) => processImage(s), 300);
+  }, [processImage]);
 
   useEffect(() => {
     const isDefault =
@@ -109,7 +107,6 @@ export default function ImageEditor({ originalImage, onNewImage }) {
     setLoading(true);
     try {
       let res;
-
       const img = displayImage;
 
       switch (action) {
@@ -187,8 +184,14 @@ export default function ImageEditor({ originalImage, onNewImage }) {
 
         {/* Controls */}
         <div className="control-panel">
-          <ControlPanel settings={settings} onSettingChange={handleSettingChange} />
-          <PresetFilters onApplyPreset={handlePreset} disabled={loading} />
+          <ControlPanel
+            settings={settings}
+            onSettingChange={handleSettingChange}
+          />
+          <PresetFilters
+            onApplyPreset={handlePreset}
+            disabled={loading}
+          />
         </div>
       </div>
     </motion.div>
