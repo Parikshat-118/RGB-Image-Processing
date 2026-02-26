@@ -30,8 +30,8 @@ function App() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.8 }}
         >
-          <h1 className="title">🎨 Photo Editor 3D</h1>
-          <p className="subtitle">Real-time image manipulation with stunning 3D interface</p>
+          <h1 className="title">🎨 Photo Editor </h1>
+          <p className="subtitle">Real-time image manipulation</p>
         </motion.header>
 
         {!showEditor ? (
